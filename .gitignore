@@ -2,3 +2,7 @@
 ChocoSolver/META-INF/
 ChocoSolver/pom.xml
 ChocoSolver/out/
+
+# Build outputs
+**/target/
+temp_res.txt

@@ -1,20 +1,21 @@
 package oscar.cp.mymodels
 
 import oscar.cp._
-import oscar.cp.constraints.DistanceGT
+import oscar.cp.constraints.GlobalMinimumDistance
 
 import scala.io.Source
 
 /**
- * Ternary pDD model (M_t) using DistanceGT constraints.
- * One shared objective variable minDist; each facility pair posts DistanceGT.
+ * Global MinimumDistance pDD model.
+ * One shared objective minDist; one GlobalMinimumDistance over all facility pairs
+ * (shared sorted neighbor table, per-pair lows, no FF auxiliaries).
  */
-object pDispersionTernary extends CPModel with App {
+object pDispersionGlobal extends CPModel with App {
 
   val filename = if (args.length > 0) args(0) else "data/input.txt"
   val searchHeuristic = if (args.length > 1) args(1) else ""
   val lines = Source.fromFile(filename).getLines().flatMap(_.split("\\s+")).filter(_.nonEmpty)
-  println(s"OscaR with Ternary DistanceGT constraints")
+  println(s"OscaR with Global MinimumDistance constraint")
   println(s"Filename: ${filename}")
 
   def nextInt: Int = lines.next().toInt
@@ -48,13 +49,7 @@ object pDispersionTernary extends CPModel with App {
   val x = Array.fill(nFacilities)(CPIntVar(0 until nLocations))
   val minDist = CPIntVar(0 to maxDist)
 
-  for {
-    i <- 0 until nFacilities
-    j <- i + 1 until nFacilities
-  } {
-    val d_lb = minDistance(i)(j)
-    add(new DistanceGT(x(i), x(j), minDist, distance, d_lb))
-  }
+  add(new GlobalMinimumDistance(x, minDist, distance, minDistance))
 
   maximize(minDist)
 

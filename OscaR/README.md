@@ -119,12 +119,33 @@ sbt "runMain oscar.cp.mymodels.pDispersionTernary ..\Benchmarks\GRID\10-30-05\0.
 Constraint source: `src/main/scala/oscar/cp/constraints/DistanceGT.scala`  
 Model source: `src/main/scala/oscar/cp/mymodels/pDispersionTernary.scala`
 
+### Global MinimumDistance model (Element fusion)
+
+One global constraint over all facility pairs: shared sorted-neighbor table, per-pair lows, objective `minDist` inside the propagator (no FF / Element auxiliaries).
+
+```powershell
+$env:SBT_OPTS="-Xmx8g"
+sbt "runMain oscar.cp.mymodels.pDispersionGlobal [problem_filepath] [heuristic]"
+```
+
+Example:
+
+```powershell
+$env:SBT_OPTS="-Xmx8g"
+sbt "runMain oscar.cp.mymodels.pDispersionGlobal ..\Benchmarks\GRID\10-30-05\0.txt domwdeg"
+```
+
+Constraint source: `src/main/scala/oscar/cp/constraints/GlobalMinimumDistance.scala`  
+Model source: `src/main/scala/oscar/cp/mymodels/pDispersionGlobal.scala`
+
 ### Run without sbt (after compile)
 
 ```powershell
 java -Xms1g -Xmx8g -cp "target\scala-2.13\classes;oscar-element.jar" oscar.cp.mymodels.pDispersionElement2DNew "..\Benchmarks\GRID\10-30-05\0.txt" domwdeg
 
 java -Xms1g -Xmx8g -cp "target\scala-2.13\classes;oscar-element.jar" oscar.cp.mymodels.pDispersionTernary "..\Benchmarks\GRID\10-30-05\0.txt" domwdeg
+
+java -Xms1g -Xmx8g -cp "target\scala-2.13\classes;oscar-element.jar" oscar.cp.mymodels.pDispersionGlobal "..\Benchmarks\GRID\10-30-05\0.txt" domwdeg
 ```
 
 ---
@@ -173,6 +194,10 @@ sbt "runMain oscar.cp.mymodels.pDispersionElement2DNew ..\Benchmarks\GRID\10-30-
 # Ternary DistanceGT
 $env:SBT_OPTS="-Xmx8g"
 sbt "runMain oscar.cp.mymodels.pDispersionTernary ..\Benchmarks\GRID\10-30-05\0.txt domwdeg"
+
+# Global MinimumDistance
+$env:SBT_OPTS="-Xmx8g"
+sbt "runMain oscar.cp.mymodels.pDispersionGlobal ..\Benchmarks\GRID\10-30-05\0.txt domwdeg"
 ```
 
 Compare **objective**, **nNodes**, **nFails**, and **time** in the printed stats.
